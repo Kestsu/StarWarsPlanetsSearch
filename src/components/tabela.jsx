@@ -3,10 +3,22 @@ import { PlanetsContext } from '../context/userGlobal';
 import Print from '../Helpers/print';
 
 function Table() {
-  const { data } = useContext(PlanetsContext);
-  console.log(data);
+  const { store, funcoes } = useContext(PlanetsContext);
+  const { handleInput } = funcoes;
+  const { data, input } = store;
+
   return (
     <div>
+      <label htmlFor="input">
+        Pesquise:
+        <input
+          data-testid="name-filter"
+          id="input"
+          type="text"
+          value={ input[0].filterByName.name }
+          onChange={ handleInput }
+        />
+      </label>
       <table>
         <thead>
           <tr>

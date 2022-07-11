@@ -4,24 +4,46 @@ import getPlanets from '../services/planetsAPI';
 export const PlanetsContext = createContext({});
 
 function PlanetsProvider(props) {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([{
+  }]);
+  const [input, setInput] = useState([{
+    filterByName: {
+      name: '',
+    },
+  }]);
 
-  const addNew = (a) => {
-    setData((oldState) => [...oldState, a]);
-  };
-
+  async function API() {
+    const retorno = await getPlanets();
+    const obj = retorno.filter((item) => delete item.residents
+    && item.name.includes(input[0].filterByName.name));
+    setData(obj);
+  }
   useEffect(() => {
-    const API = async () => {
-      const retorno = await getPlanets();
-      // console.log(retorno);
-      // const obj = retorno.filter((item) => delete item.residents);
-      setData(retorno);
-    };
     API();
   }, []);
 
+  useEffect(() => {
+    API();
+  }, [input]);
+
+  function handleInput({ target }) {
+    const a = {
+      filterByName: {
+        name: target.value,
+      },
+    };
+    setInput([a]);
+  }
+
+  const store = {
+    data, input,
+  };
+  const funcoes = {
+    handleInput, setData,
+  };
+
   const contextValue = {
-    data, addNew,
+    store, funcoes,
   };
   return (
     <PlanetsContext.Provider value={ contextValue }>
