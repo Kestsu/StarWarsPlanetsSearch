@@ -87,6 +87,8 @@ function PlanetsProvider(props) {
   const store = {
     data,
     input,
+    filterByNumericValues,
+    original,
   };
   const funcoes = {
     handleInput,

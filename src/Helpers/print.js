@@ -10,7 +10,7 @@ export default class Print extends React.Component {
     } = all;
 
     return (
-      <tr>
+      <tr data-testid="list">
         <td><img src={ url } alt="" /></td>
         <td>{edited}</td>
         <td>{name}</td>

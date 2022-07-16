@@ -1,23 +1,49 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { PlanetsContext } from '../context/userGlobal';
 
 function Filtros() {
-  const { funcoes } = useContext(PlanetsContext);
-  const { setFiltro } = funcoes;
+  const { funcoes, store } = useContext(PlanetsContext);
+  const { setFiltro, setData } = funcoes;
+  const { filterByNumericValues, original } = store;
 
-  const [coluna, setColumn] = useState('population');
   const [comparacao, setComparison] = useState('maior que');
-  const [valor, setValor] = useState('0');
+  const [valor, setValor] = useState(0);
+  const [arrayOption, setArrayOption] = useState(
+    ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
+  );
+  const [coluna, setColumn] = useState('population');
 
+  useEffect(() => {
+    setColumn(arrayOption[0]);
+  }, [arrayOption]);
+
+  function handleRemove() {
+    setArrayOption(
+      arrayOption.filter((item) => item !== coluna),
+    );
+    setValor('0');
+  }
   function handleFiltrar() {
     const a = {
       column: coluna,
       comparison: comparacao,
       value: valor,
     };
-    // console.log(a);
     setFiltro((oldState) => [...oldState, a]);
+    handleRemove();
   }
+
+  async function handleAdd({ target }) {
+    // console.log(target);
+    setData(original);
+    setValor('0');
+    await setFiltro(
+      filterByNumericValues.filter((item) => item.column !== target.id),
+      // filterByNumericValues.filter((item) => console.log(item.column)),
+    );
+    setArrayOption([...arrayOption, target.id]);
+  }
+
   function handleChange({ target }) {
     const { value, name } = target;
     if (name === 'column') {
@@ -31,6 +57,14 @@ function Filtros() {
     }
   }
 
+  function removeAll() {
+    setArrayOption(
+      ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
+    );
+    setData(original);
+    setFiltro([]);
+  }
+
   return (
     <form>
       <select
@@ -39,11 +73,11 @@ function Filtros() {
         onChange={ handleChange }
         value={ coluna }
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        {
+          arrayOption.map((item) => (
+            <option key={ item } value={ item }>{item}</option>
+          ))
+        }
       </select>
 
       <select
@@ -71,6 +105,43 @@ function Filtros() {
       <button type="button" data-testid="button-filter" onClick={ handleFiltrar }>
         FILTRAR
       </button>
+      <div>
+
+        {
+          filterByNumericValues.map((item) => (
+            <div key={ item.column }>
+              <h4
+                type="text"
+                data-testid="filter"
+              >
+                {item.column}
+                {' '}
+                { item.comparison}
+                {' '}
+                { item.value }
+
+                <button
+                  id={ item.column }
+                  type="button"
+                  onClick={ handleAdd }
+                  data-testid={ `filter-${item.column}` }
+                >
+                  Delete
+
+                </button>
+              </h4>
+            </div>
+          ))
+        }
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ removeAll }
+        >
+          Remover todas filtragens
+
+        </button>
+      </div>
     </form>
   );
 }
@@ -83,3 +154,11 @@ export default Filtros;
 //     }]);
 //     console.log(value, name);
 //   };
+
+// await setArrayOption([]);
+// setArrayOption(arrayOption.forEach((element, index) => {
+//   filterByNumericValues.forEach((a, i) => {
+//     element[index] !== a[i] ? setArrayOption([...arrayOption, element[index]])
+//   });
+// }));
+// console.log(filterByNumericValues);

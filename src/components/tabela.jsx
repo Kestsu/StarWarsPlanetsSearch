@@ -22,19 +22,19 @@ function Table() {
       <table>
         <thead>
           <tr>
-            <th>Imagem</th>
-            <th>Edited</th>
-            <th>Name</th>
-            <th>Rotation Period</th>
-            <th>Orbital Period</th>
-            <th>Diameter</th>
-            <th>Climate</th>
-            <th>Gravity</th>
-            <th>Terrain</th>
-            <th>Surface Water</th>
-            <th>Population</th>
-            <th>Films</th>
-            <th>Created</th>
+            <th data-testid="Imagem">Imagem</th>
+            <th data-testid="Edited">Edited</th>
+            <th data-testid="Name">Name</th>
+            <th data-testid="Rotation">Rotation Period</th>
+            <th data-testid="Orbital">Orbital Period</th>
+            <th data-testid="Diameter">Diameter</th>
+            <th data-testid="Climate">Climate</th>
+            <th data-testid="Gravity">Gravity</th>
+            <th data-testid="Terrain">Terrain</th>
+            <th data-testid="Surface">Surface Water</th>
+            <th data-testid="Population">Population</th>
+            <th data-testid="Films">Films</th>
+            <th data-testid="Created">Created</th>
           </tr>
         </thead>
         <tbody>
