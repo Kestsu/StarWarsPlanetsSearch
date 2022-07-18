@@ -38,9 +38,9 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {
-            data.map((item) => (<Print key={ item.name } all={ item } />))
-          }
+          {data?.map((item) => (
+            <Print key={ item.name } all={ item } />
+          ))}
         </tbody>
       </table>
     </div>

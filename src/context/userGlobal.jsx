@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import getPlanets from '../services/planetsAPI';
 
 export const PlanetsContext = createContext({});
 
-function PlanetsProvider(props) {
+function PlanetsProvider({ children }) {
   const [original, setOriginal] = useState([]);
   const [data, setData] = useState([]);
+  const [filterByNumericValues, setFiltro] = useState([]);
   const [input, setInput] = useState([
     {
       filterByName: {
@@ -13,75 +15,55 @@ function PlanetsProvider(props) {
       },
     },
   ]);
-  const [filterByNumericValues, setFiltro] = useState([]);
-  // const [filtrado, setFiltrado] = useState([]);
 
-  async function filterName() {
-    const obj = original.filter(
-      (item) => item.name.includes(input[0].filterByName.name),
-    );
-    return obj;
-  }
-  function setarMaior(tipo, quantidade) {
-    const numero = parseFloat(quantidade);
-    const filt = data.filter((b) => b[tipo] > numero && b[tipo]);
-    setData(filt);
-  }
-  function setarMenor(tipo, quantidade) {
-    const numero = parseFloat(quantidade);
-    const filt = data.filter((b) => b[tipo] < numero && b[tipo]);
-    setData(filt);
-  }
-  function setarIgual(tipo, quantidade) {
-    // const numero = parseFloat(quantidade);
-    const filt = data.filter((b) => b[tipo] === quantidade && b[tipo]);
-    setData(filt);
-  }
-
-  async function filtrar() {
-    filterByNumericValues.forEach((item) => {
-      // console.log(item.comparison);
-      if (item.comparison === 'maior que') {
-        setarMaior(item.column, item.value);
-      }
-      if (item.comparison === 'menor que') {
-        setarMenor(item.column, item.value);
-        console.log(item.column, item.value);
-      }
-      if (item.comparison === 'igual a') {
-        setarIgual(item.column, item.value);
-      }
-    });
-  }
-  async function API() {
-    const retorno = await getPlanets();
-    const obj = retorno.filter(
-      (item) => delete item.residents,
-    );
-    setOriginal(obj);
-    return obj;
-  }
   useEffect(() => {
-    const a = async () => setData(await API());
-    a();
+    const API = async () => {
+      const retorno = await getPlanets();
+      const obj = retorno?.filter((item) => delete item.residents);
+      setOriginal(obj);
+      setData(obj);
+      return obj;
+    };
+    API();
   }, []);
 
   useEffect(() => {
-    const a = async () => setData(await filterName());
-    a();
+    const filterName = async () => {
+      const obj = original.filter(
+        (item) => item.name.includes(input[0].filterByName.name),
+      );
+      setData(await obj);
+      return obj;
+    };
+    filterName();
   }, [input]);
 
   useEffect(() => {
+    const filtrar = async () => {
+      filterByNumericValues.forEach((item) => {
+        if (item.comparison === 'maior que') {
+          const numero = parseFloat(item.value);
+          setData(data.filter((b) => b[item.column] > numero && b[item.column]));
+        }
+        if (item.comparison === 'menor que') {
+          const numero = parseFloat(item.value);
+          setData(data.filter((b) => b[item.column] < numero && b[item.column]));
+        }
+        if (item.comparison === 'igual a') {
+          // const numero = parseFloat(quantidade);
+          setData(data.filter((b) => b[item.column] === item.value && b[item.column]));
+        }
+      });
+    };
     filtrar();
   }, [filterByNumericValues]);
 
   function handleInput({ target }) {
-    const a = {
+    setInput([{
       filterByName: {
         name: target.value,
       },
-    };
-    setInput([a]);
+    }]);
   }
 
   const store = {
@@ -90,38 +72,18 @@ function PlanetsProvider(props) {
     filterByNumericValues,
     original,
   };
-  const funcoes = {
-    handleInput,
-    setData,
-    setFiltro,
-  };
+  const funcoes = { handleInput, setData, setFiltro };
 
-  const contextValue = {
-    store,
-    funcoes,
-  };
+  const contextValue = { store, funcoes };
   return (
     <PlanetsContext.Provider value={ contextValue }>
-      {props.children}
+      {children}
     </PlanetsContext.Provider>
   );
 }
 
-export default PlanetsProvider;
+PlanetsProvider.propTypes = {
+  children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+};
 
-// if (comparison === 'maior que') {
-//   const a = await API();
-//   const filt = a.filter((item) => console.log(item.column));
-//   setData(filt);
-//   console.log('maior');
-// }
-// if (comparison === 'menor que') {
-//   const a = await API();
-//   const filt = a.filter((item) => item.column > value);
-//   setData(filt);
-// }
-// if (comparison === 'igual') {
-//   const a = await API();
-//   const filt = a.filter((item) => item.column === value);
-//   setData(filt);
-// }
+export default PlanetsProvider;

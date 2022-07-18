@@ -8,9 +8,13 @@ function Filtros() {
 
   const [comparacao, setComparison] = useState('maior que');
   const [valor, setValor] = useState(0);
-  const [arrayOption, setArrayOption] = useState(
-    ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
-  );
+  const [arrayOption, setArrayOption] = useState([
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ]);
   const [coluna, setColumn] = useState('population');
 
   useEffect(() => {
@@ -18,10 +22,8 @@ function Filtros() {
   }, [arrayOption]);
 
   function handleRemove() {
-    setArrayOption(
-      arrayOption.filter((item) => item !== coluna),
-    );
-    setValor('0');
+    setArrayOption(arrayOption.filter((item) => item !== coluna));
+    setValor(0);
   }
   function handleFiltrar() {
     const a = {
@@ -34,12 +36,10 @@ function Filtros() {
   }
 
   async function handleAdd({ target }) {
-    // console.log(target);
     setData(original);
     setValor('0');
     await setFiltro(
       filterByNumericValues.filter((item) => item.column !== target.id),
-      // filterByNumericValues.filter((item) => console.log(item.column)),
     );
     setArrayOption([...arrayOption, target.id]);
   }
@@ -58,9 +58,13 @@ function Filtros() {
   }
 
   function removeAll() {
-    setArrayOption(
-      ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
-    );
+    setArrayOption([
+      'population',
+      'orbital_period',
+      'diameter',
+      'rotation_period',
+      'surface_water',
+    ]);
     setData(original);
     setFiltro([]);
   }
@@ -73,11 +77,11 @@ function Filtros() {
         onChange={ handleChange }
         value={ coluna }
       >
-        {
-          arrayOption.map((item) => (
-            <option key={ item } value={ item }>{item}</option>
-          ))
-        }
+        {arrayOption.map((item) => (
+          <option key={ item } value={ item }>
+            {item}
+          </option>
+        ))}
       </select>
 
       <select
@@ -106,40 +110,31 @@ function Filtros() {
         FILTRAR
       </button>
       <div>
-
-        {
-          filterByNumericValues.map((item) => (
-            <div key={ item.column }>
-              <h4
-                type="text"
-                data-testid="filter"
+        {filterByNumericValues.map((item) => (
+          <div key={ item.column }>
+            <h4 type="text" data-testid="filter">
+              {item.column}
+              {' '}
+              {item.comparison}
+              {' '}
+              {item.value}
+              <button
+                id={ item.column }
+                type="button"
+                onClick={ handleAdd }
+                data-testid={ `filter-${item.column}` }
               >
-                {item.column}
-                {' '}
-                { item.comparison}
-                {' '}
-                { item.value }
-
-                <button
-                  id={ item.column }
-                  type="button"
-                  onClick={ handleAdd }
-                  data-testid={ `filter-${item.column}` }
-                >
-                  Delete
-
-                </button>
-              </h4>
-            </div>
-          ))
-        }
+                Delete
+              </button>
+            </h4>
+          </div>
+        ))}
         <button
           type="button"
           data-testid="button-remove-filters"
           onClick={ removeAll }
         >
           Remover todas filtragens
-
         </button>
       </div>
     </form>
